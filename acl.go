@@ -1,25 +1,25 @@
 package acl
 
 type ACL interface {
-	Can(int, int, byte) bool
+	Can(int, int, uint64) bool
 }
 
-type Acl map[int]map[int]byte
+type Acl map[int]map[int]uint64
 
-func (a Acl) AddPerms(r int, o int, p ...byte) {
+func (a Acl) AddPerms(r int, o int, p ...uint64) {
 	for i := range p {
 		a[r][o] |= p[i]
 	}
 }
 
-func (a Acl) RevokePerms(r int, o int, p ...byte) {
+func (a Acl) RevokePerms(r int, o int, p ...uint64) {
 	for i := range p {
 		a[r][o] &^= p[i]
 	}
 }
 
 func (a Acl) AddRole(r int, inh ...int) {
-	a[r] = make(map[int]byte)
+	a[r] = make(map[int]uint64)
 	for i := range inh {
 		for j, v := range a[inh[i]] {
 			a[r][j] |= v
@@ -27,6 +27,6 @@ func (a Acl) AddRole(r int, inh ...int) {
 	}
 }
 
-func (a Acl) Can(r int, o int, p byte) bool {
+func (a Acl) Can(r int, o int, p uint64) bool {
 	return a[r][o]&p != 0
 }
