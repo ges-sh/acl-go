@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Create byte = 1 << iota
+	Create uint64 = 1 << iota
 	Remove
 	Rename
 	FreeCreate
@@ -28,17 +28,17 @@ const (
 
 func TestACL(t *testing.T) {
 	a := Acl{
-		User: map[int]byte{
+		User: map[int]uint64{
 			Lists:     Create | Rename,
 			Campaigns: Create | Rename,
 		},
-		Affiliate: map[int]byte{
+		Affiliate: map[int]uint64{
 			AffCampaigns: Create | Rename | Remove,
 		},
-		Manager: map[int]byte{
+		Manager: map[int]uint64{
 			AffCampaigns: Create | Rename | RemoveAny,
 		},
-		Admin: map[int]byte{
+		Admin: map[int]uint64{
 			Lists:     Create | Remove | Rename,
 			Campaigns: Create | Remove | Rename,
 		},
@@ -48,7 +48,7 @@ func TestACL(t *testing.T) {
 		shouldCan bool
 		Role      int
 		Object    int
-		Action    byte
+		Action    uint64
 	}{
 		{
 			true,

@@ -7,7 +7,7 @@ package acl
 // )
 
 // const (
-// 	Create byte = 1 << iota
+// 	Create uint64 = 1 << iota
 // 	Remove
 // 	Rename
 // )
