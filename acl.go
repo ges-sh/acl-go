@@ -1,9 +1,5 @@
 package acl
 
-type ACL interface {
-	Can(int, int, uint64) bool
-}
-
 type Acl map[int]map[int]uint64
 
 func (a Acl) AddPerms(r int, o int, p ...uint64) {
