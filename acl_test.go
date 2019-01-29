@@ -1,109 +1,94 @@
 package acl
 
-import (
-	"testing"
+import "testing"
+
+// User roles
+const (
+	Guest = 0
+	User  = 1
+	Admin = 2
 )
 
+// for test purposes
+var roleLookup = map[int]string{
+	Guest: "guest",
+	User:  "user",
+	Admin: "admin",
+}
+
+// User permissions
 const (
-	Create uint64 = 1 << iota
-	Remove
-	Rename
-	FreeCreate
-	RemoveAny
+	Read uint64 = 1 << iota
+	Write
 )
 
+// for test purposes
+var permLookup = map[uint64]string{
+	Read:  "read",
+	Write: "write",
+}
+
+// Protected resources
 const (
-	User int = iota
-	Affiliate
-	Manager
-	Admin
+	Article int = iota
+	Video
 )
 
-const (
-	Lists int = iota
-	AffCampaigns
-	Swipes
-	Campaigns
-)
+// for test purposes
+var resLookup = map[int]string{
+	Article: "article",
+	Video:   "video",
+}
 
 func TestACL(t *testing.T) {
-	a := ACL{
-		User: map[int]uint64{
-			Lists:     Create | Rename,
-			Campaigns: Create | Rename,
-		},
-		Affiliate: map[int]uint64{
-			AffCampaigns: Create | Rename | Remove,
-		},
-		Manager: map[int]uint64{
-			AffCampaigns: Create | Rename | RemoveAny,
-		},
-		Admin: map[int]uint64{
-			Lists:     Create | Remove | Rename,
-			Campaigns: Create | Remove | Rename,
-		},
-	}
+	acl := ACL{}
 
-	testData := []struct {
-		shouldCan bool
-		Role      int
-		Object    int
-		Action    uint64
+	guest := acl.AddRole(Guest)
+	guest.AddPerms(Article, Read)
+	guest.AddPerms(Video, Read)
+
+	user := acl.AddRole(User, guest)
+	user.AddPerms(Video, Write)
+
+	admin := acl.AddRole(Admin, user)
+	admin.AddPerms(Article, Write)
+
+	testCases := []struct {
+		role     int
+		resource int
+		perm     uint64
+		expCan   bool
 	}{
 		{
-			true,
-			User,
-			Lists,
-			Create,
+			role:     Guest,
+			resource: Article,
+			perm:     Read,
+			expCan:   true,
 		},
 		{
-			false,
-			User,
-			Lists,
-			Remove,
+			role:     User,
+			resource: Video,
+			perm:     Write,
+			expCan:   true,
 		},
 		{
-			false,
-			User,
-			Campaigns,
-			Remove,
-		},
-		{
-			true,
-			Affiliate,
-			AffCampaigns,
-			Create,
-		},
-		{
-			false,
-			Affiliate,
-			Campaigns,
-			Remove,
-		},
-		{
-			true,
-			Manager,
-			AffCampaigns,
-			RemoveAny,
-		},
-		{
-			true,
-			Admin,
-			Lists,
-			Remove,
-		},
-		{
-			true,
-			Admin,
-			Campaigns,
-			Remove,
+			role:     Guest,
+			resource: Article,
+			perm:     Write,
+			expCan:   false,
 		},
 	}
 
-	for _, v := range testData {
-		can := a.Can(v.Role, v.Object, v.Action)
-		if v.shouldCan != can {
-			t.Errorf("Role %v, object %v, action %v, shouldCan %v, Can %v", v.Role, v.Object, v.Action, v.shouldCan, can)
+	for _, tt := range testCases {
+		if tt.expCan != acl.Can(tt.role, tt.resource, tt.perm) {
+			if tt.expCan {
+				t.Errorf("%s should be able to %s %s", roleLookup[tt.role],
+					permLookup[tt.perm], resLookup[tt.resource])
+				return
+			}
+			t.Errorf("%s shouldn't be able to %s %s", roleLookup[tt.role],
+				permLookup[tt.perm], resLookup[tt.resource])
+			return
 		}
 	}
 }

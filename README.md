@@ -1,38 +1,30 @@
 # acl
 
 ### Usage example
-
 ```go
-	const (
-		Create byte = 1 << iota
-		Remove
-		Rename
-	)
-	
-	const (
-		Lists int = iota
-		AffCampaigns
-	)
+const (
+	User = iota
+	Admin
+)
 
-	const (
-		User int = iota
-		Affiliate
-		Admin
-	)
-	
-	func main() {
-		var a = acl.Acl{}
+// Permissions
+const (
+	Create = 1 << iota
+	Delete
+	// ...
+)
 
-		a.AddRole(User)
-		a.AddPerms(User, Lists, Create, Remove, Rename)
+const (
+	Article = iota
+	Video
+)
 
-		a.AddRole(Affiliate)
-		a.AddPerms(Affiliate, AffCampaigns, Create, Remove, Rename)
+func TestACL(t *testing.T) {
+	acl := acl.ACL{}
 
-		a.AddRole(Admin, User, Affiliate)
+	user := acl.AddRole(User)
+	user.AddPerms(Article, Create)
 
-		fmt.Println(a.Can(User, Lists, Create)) // true
-		fmt.Println(a.Can(User, AffCampaigns, Create)) // false
-		fmt.Println(a.Can(Admin, AffCampaigns, Create)) // true
-	}
+	fmt.Println(acl.Can(User, Article, Create)) // true
+}
 ```
