@@ -1,3 +1,5 @@
+// Package acl provides simple RBACL (Role Based Access Control List).
+// It allows to create list of roles with specific permissions on given resources, protecting them from unwanted access.
 package acl
 
 // ACL contains all role's permissions. It is possible to have up to 64 permissions on a single object.

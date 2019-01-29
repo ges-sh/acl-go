@@ -24,7 +24,7 @@ const (
 	Video
 )
 
-func TestACL(t *testing.T) {
+func Example(t *testing.T) {
 	acl := acl.ACL{}
 
 	user := acl.AddRole(User)
