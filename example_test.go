@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	acl "github.com/ges-sh/acl-go"
+	acl "github.com/ges-sh/acl-go/v2"
 )
 
 const (
