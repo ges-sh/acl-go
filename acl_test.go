@@ -27,7 +27,7 @@ const (
 )
 
 func TestACL(t *testing.T) {
-	a := Acl{
+	a := ACL{
 		User: map[int]uint64{
 			Lists:     Create | Rename,
 			Campaigns: Create | Rename,
